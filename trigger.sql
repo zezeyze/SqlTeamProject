@@ -1,4 +1,4 @@
--- Kullanýcýlar ürün satýn aldýktan sonra belirlenen miktarda puan tablosuna ödül puanlar ekleyen trigger.
+-- KullanÄ±cÄ±lar Ã¼rÃ¼n satÄ±n aldÄ±ktan sonra belirlenen miktarda puan tablosuna Ã¶dÃ¼l puanlar ekleyen trigger.
 IF OBJECT_ID(' dbo.trg_UrunSatinAlma') IS NOT NULL
 	BEGIN
 		DROP FUNCTION dbo.trg_UrunSatinAlma
@@ -12,24 +12,25 @@ CREATE OR ALTER TRIGGER trg_UrunSatinAlma
 ON tblKullaniciUrunSatinAlma
 AFTER INSERT
 AS
+	
 BEGIN
     DECLARE @KullaniciID INT, @Harcama MONEY;
 
-    -- Eklenen verilerin bilgileri alýnýr.
+    -- Eklenen verilerin bilgileri alÄ±nÄ±r.
     SELECT @KullaniciID = KullaniciID, @Harcama = SUM(Fiyat)
     FROM inserted
-    GROUP BY KullaniciID; -- KullaniciID'ye göre gruplanýr.
+    GROUP BY KullaniciID; -- KullaniciID'ye gÃ¶re gruplanÄ±r.
     BEGIN        
-		-- Her ürünün fiyatýnýn %10'u kadar ödül puan verilir.
+		-- Her Ã¼rÃ¼nÃ¼n fiyatÄ±nÄ±n %10'u kadar Ã¶dÃ¼l puan verilir.
         DECLARE @OdulPuan INT = @Harcama * 0.1; 
 
-        -- PuanTablosu tablosuna kullanýcýya verilen ödül puaný eklenir.
+        -- PuanTablosu tablosuna kullanÄ±cÄ±ya verilen Ã¶dÃ¼l puanÄ± eklenir.
         INSERT INTO PuanTablosu (KullaniciID, OdulPuan)
         VALUES (@KullaniciID, @OdulPuan);
 
-        -- Kullanýcýya yapýlan iþlem hakkýnda bilgilendirme yapýlýr.
-        PRINT 'Tebrikler! Toplam harcamanýz ' + CONVERT(VARCHAR, @Harcama) +
-		' üzerinde olduðu için ' + CONVERT(VARCHAR, @OdulPuan) + ' puan kazandýnýz.';
+        -- KullanÄ±cÄ±ya yapÄ±lan iÅŸlem hakkÄ±nda bilgilendirme yapÄ±lÄ±r.
+        PRINT 'Tebrikler! Toplam harcamanÄ±z ' + CONVERT(VARCHAR, @Harcama) +
+		' Ã¼zerinde olduÄŸu iÃ§in ' + CONVERT(VARCHAR, @OdulPuan) + ' puan kazandÄ±nÄ±z.';
     END
 END;
 
